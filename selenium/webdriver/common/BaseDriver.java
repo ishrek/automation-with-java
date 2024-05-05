@@ -1,9 +1,12 @@
 package webdriver.common;
 
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -13,12 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 public class BaseDriver {
     public WebDriver driver;
+    public Alert alert;
+    public JavascriptExecutor jsExcutor;
     public WebDriverWait explicitWait;
     String projectPath = System.getProperty("user.dir");
-    String osName = System.getProperty("os.name");
+    public String osName = System.getProperty("os.name");
 
     WebDriverType driverType = WebDriverType.FIRE_FOX;
-
+    public FirefoxOptions ffPptions;
     @BeforeClass
     public void beforeClass() {
         if (osName.contains("Windows")) {
@@ -35,9 +40,15 @@ public class BaseDriver {
                 driver = new EdgeDriver();
             }
             case FIRE_FOX -> {
-                driver = new FirefoxDriver();
+                if (ffPptions == null) {
+                    driver = new FirefoxDriver();
+                } else {
+                    driver = new FirefoxDriver(ffPptions);
+                }
+
             }
         }
+        jsExcutor =(JavascriptExecutor) driver;
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
     }
 
