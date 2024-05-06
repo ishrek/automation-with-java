@@ -7,6 +7,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import webdriver.common.Utils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,7 @@ public class Topic_01_Check_Environment {
     public void TC_01_Run_On_Firefox() {
         driver = new FirefoxDriver();
         driver.get("https://www.facebook.com/");
+        Utils.sleepInSecond(3);
     }
 
     @Test
@@ -36,6 +38,7 @@ public class Topic_01_Check_Environment {
 //        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get("https://www.facebook.com/");
+        Utils.sleepInSecond(3);
     }
 
 //    @Test
