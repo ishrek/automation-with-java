@@ -26,20 +26,26 @@ public class BaseDriver {
     public FirefoxOptions ffPptions;
     @BeforeClass
     public void beforeClass() {
-        if (osName.contains("Windows")) {
-            System.setProperty("webdriver.gecko.driver", projectPath + "\\browserDrivers\\geckodriver.exe");
-        } else {
-            System.setProperty("webdriver.gecko.driver", projectPath + "/browserDrivers/geckodriver");
-        }
+
 
         switch (driverType) {
             case CHORME -> {
+                if (osName.contains("Windows")) {
+                    System.setProperty("webdriver.chrome.driver", projectPath + "\\browserDrivers\\chromedriver.exe");
+                } else {
+                    System.setProperty("webdriver.chrome.driver", projectPath + "/browserDrivers/chromedriver");
+                }
                 driver = new ChromeDriver();
             }
             case EDGE -> {
                 driver = new EdgeDriver();
             }
             case FIRE_FOX -> {
+                if (osName.contains("Windows")) {
+                    System.setProperty("webdriver.gecko.driver", projectPath + "\\browserDrivers\\geckodriver.exe");
+                } else {
+                    System.setProperty("webdriver.gecko.driver", projectPath + "/browserDrivers/geckodriver");
+                }
                 if (ffPptions == null) {
                     driver = new FirefoxDriver();
                 } else {
