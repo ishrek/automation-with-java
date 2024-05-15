@@ -19,15 +19,13 @@ public class BaseDriver {
     public Alert alert;
     public JavascriptExecutor jsExcutor;
     public WebDriverWait explicitWait;
-    String projectPath = System.getProperty("user.dir");
+    public String projectPath = System.getProperty("user.dir");
     public String osName = System.getProperty("os.name");
 
     WebDriverType driverType = WebDriverType.FIRE_FOX;
     public FirefoxOptions ffPptions;
     @BeforeClass
     public void beforeClass() {
-
-
         switch (driverType) {
             case CHORME -> {
                 if (osName.contains("Windows")) {
