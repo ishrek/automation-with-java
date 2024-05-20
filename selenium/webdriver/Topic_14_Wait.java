@@ -4,6 +4,7 @@ import graphql.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -29,7 +30,7 @@ public class Topic_14_Wait extends BaseDriver {
      * */
 
     By reconfirmEmail = By.cssSelector("input[name='reg_email_confirmation__']");
-
+    private FluentWait fluentWait;
     @BeforeClass
     @Override
     public void beforeClass() {
@@ -97,4 +98,76 @@ public class Topic_14_Wait extends BaseDriver {
         Utils.sleepInSecond(3);
         explicitWait.until(ExpectedConditions.stalenessOf(ele));
     }
+
+    @Test
+    private void TC_05_Mixing_Implicit_And_Explicit_FoundElement() {
+        /*
+         * Implicit: phu hop voi tim element
+         * Explicit: phu hop voi trang thai cua element
+         */
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        driver.get("https://www.facebook.com/");
+
+        // Implicit
+        System.out.println("==== Start Implicit: " + System.currentTimeMillis() + " =====");
+        driver.findElement(By.xpath("//button[@name='login']"));
+        System.out.println("==== End: " + System.currentTimeMillis() + " =====");
+
+        // Explicit
+        System.out.println("==== Start Explicit: " + System.currentTimeMillis() + " =====");
+        explicitWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@name='login']")));
+        System.out.println("==== End: " + System.currentTimeMillis() + " =====");
+
+    }
+
+    @Test
+    private void TC_05_Mixing_Implicit_NotFoundElement() {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.get("https://www.facebook.com/");
+
+        // Implicit
+        System.out.println("==== Start Implicit: " + System.currentTimeMillis() + " =====");
+        driver.findElement(By.xpath("//button[@name='adasd']"));
+        System.out.println("==== End: " + System.currentTimeMillis() + " =====");
+    }
+
+    @Test
+    private void TC_05_Fluent_wait() {
+        // Fluent wait khác cac wait khac la polling (tgian tim lai element)
+    }
+
+    @Test
+    private void TC_05_Page_Ready() {
+        /**
+           Handle Page Ready / Ajax Loading
+            (Su dung cho cac phan co loading ngam ben duoi)
+         */
+        driver.get("https://api.orangehrm.com/");
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+
+        explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div#loader>div.spinner")));
+    }
+    @Test
+    private void TC_05_Admin_NopCommerce() {
+        driver.get("https://admin-demo.nopcommerce.com/login?ReturnUrl=%2Fadmin%2F/");
+        driver.findElement(By.cssSelector("input#Email")).clear();
+        driver.findElement(By.cssSelector("input#Password")).clear();
+        Utils.sendHumanKeys(driver.findElement(By.cssSelector("input#Email")), "admin@yourstore.com");
+        Utils.sendHumanKeys(driver.findElement(By.cssSelector("input#Password")), "admin");
+        driver.findElement(By.cssSelector("button.login-button")).click();
+        // wait not worked : not Ok
+//        explicitWait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Logout']")));
+
+        //case 1: Wait ajax loading disappear : OK
+        //explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div#ajaxBusy")));
+
+        //case 2: Wait ajax function finished;
+        Utils.isPageLoadedSuccess(explicitWait, driver, jsExcutor);
+
+        driver.findElement(By.xpath("//a[text()='Logout']")).click();
+    }
+
+
 }
+

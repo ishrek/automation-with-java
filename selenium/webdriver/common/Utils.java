@@ -1,9 +1,15 @@
 package webdriver.common;
 
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.Random;
 
 public class Utils {
@@ -41,5 +47,25 @@ public class Utils {
         } finally {
             stream.close();
         }
+    }
+
+    public  static boolean isPageLoadedSuccess(WebDriverWait explicitWait, WebDriver driver, JavascriptExecutor jsExcutor) {
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        jsExcutor = (JavascriptExecutor) driver;
+        JavascriptExecutor finalJsExcutor = jsExcutor;
+        ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>(){
+            @Override
+            public Boolean apply(WebDriver input) {
+                return (Boolean) finalJsExcutor.executeScript("return (window.jQuery != null) && (jQuery.active === 0);");
+            }
+        };
+
+        ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>(){
+            @Override
+            public Boolean apply(WebDriver input) {
+                return finalJsExcutor.executeScript("return document.readyState").toString().equals("complete");
+            }
+        };
+        return explicitWait.until(jQueryLoad) && explicitWait.until(jsLoad);
     }
 }
