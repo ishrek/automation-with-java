@@ -25,7 +25,7 @@ public class Topic_00_Template {
 
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void  afterClass() {
         driver.quit();
     }

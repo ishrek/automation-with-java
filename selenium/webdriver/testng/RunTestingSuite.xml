@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suite name="Parameter">
+    <parameter name="environment" value="dev"/>
+    <test name="Run on firefox browser">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="webdriver.Topic_15_TestNG_Multiple_Env"/>
+        </classes>
+    </test>
+
+    <test name="Run on chrome browser">
+        <parameter name="browser" value="chrome"/>
+        <parameter name="environment" value="dev"/>
+        <classes>
+            <class name="webdriver.Topic_15_TestNG_Multiple_Env"/>
+        </classes>
+    </test>
+
+</suite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suite name="Parameter" parallel="classes" thread-count="2">
+    <parameter name="browser" value="firefox"/>
+    <parameter name="environment" value="dev"/>
+    <test name="Run on firefox browser">
+        <classes>
+            <class name="webdriver.Topic_15_TestNG_Parallel"/>
+            <class name="webdriver.Topic_15_TestNG_Parallel_2"/>
+        </classes>
+    </test>
+</suite>

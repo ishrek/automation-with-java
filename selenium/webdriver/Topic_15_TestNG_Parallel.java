@@ -1,33 +1,39 @@
-package webdriver.common;
+package webdriver;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
-public class BaseDriver {
+public class Topic_15_TestNG_Parallel {
     public WebDriver driver;
-    public Alert alert;
-    public JavascriptExecutor jsExcutor;
-    public WebDriverWait explicitWait;
+
     public String projectPath = System.getProperty("user.dir");
     public String osName = System.getProperty("os.name");
 
-    WebDriverType driverType = WebDriverType.FIRE_FOX;
-    public FirefoxOptions ffPptions;
+    /*
+     * Parallel chạy dễ bị fail nếu
+     * + caus hinh may ko du
+     * + Bang thong ko du
+     * + Hover chuot de bi xung dot
+     *
+     * Parallel = "methods"
+     * + Cac testcase ko nen phu thuoc vao nhau
+     * + Can khoi tao/clean browser(driver)
+     *
+     * */
+    @Parameters("browser") // name duoc setting trong RunTestingSuile.xml
     @BeforeClass
-    public void beforeClass() {
-        switch (driverType) {
-            case CHORME -> {
+    public void beforeClass(String browser) {
+        System.out.println("Browser Name: " + browser);
+        switch (browser) {
+            case "chrome" -> {
                 if (osName.contains("Windows")) {
                     System.setProperty("webdriver.chrome.driver", projectPath + "\\browserDrivers\\chromedriver.exe");
                 } else {
@@ -35,35 +41,27 @@ public class BaseDriver {
                 }
                 driver = new ChromeDriver();
             }
-            case EDGE -> {
+            case "edge" -> {
                 driver = new EdgeDriver();
             }
-            case FIRE_FOX -> {
+            case "firefox" -> {
                 if (osName.contains("Windows")) {
                     System.setProperty("webdriver.gecko.driver", projectPath + "\\browserDrivers\\geckodriver.exe");
                 } else {
                     System.setProperty("webdriver.gecko.driver", projectPath + "/browserDrivers/geckodriver");
                 }
-                if (ffPptions == null) {
-                    driver = new FirefoxDriver();
-                } else {
-                    driver = new FirefoxDriver(ffPptions);
-                }
-
+                driver = new FirefoxDriver();
             }
         }
-        jsExcutor =(JavascriptExecutor) driver;
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
     }
 
-    @AfterClass(alwaysRun = true) // alwaysRun = true : bắt buộc after class phải chay
-    public void  afterClass() {
+    @Test
+    private void TC_01() {
+        driver.get("https://live.techpanda.org/index.php/mobile.html");
+    }
+    @AfterClass(alwaysRun = true)
+    private void after_class() {
         driver.quit();
     }
-}
-
-enum WebDriverType {
-    FIRE_FOX,
-    CHORME,
-    EDGE
 }
