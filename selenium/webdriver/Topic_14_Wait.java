@@ -1,17 +1,18 @@
 package webdriver;
 
-import graphql.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import webdriver.common.BaseDriver;
 import webdriver.common.Utils;
 
 import java.time.Duration;
+import java.util.List;
 
 public class Topic_14_Wait extends BaseDriver {
     /*
@@ -128,7 +129,11 @@ public class Topic_14_Wait extends BaseDriver {
 
         // Implicit
         System.out.println("==== Start Implicit: " + System.currentTimeMillis() + " =====");
-        driver.findElement(By.xpath("//button[@name='adasd']"));
+        List<WebElement> item = driver.findElements(By.xpath("//button[@name='adasd']"));
+        if (item.isEmpty()) {
+            System.out.println("==== Not found End: " + System.currentTimeMillis() + " =====");
+            Assert.assertTrue(item.isEmpty());
+        }
         System.out.println("==== End: " + System.currentTimeMillis() + " =====");
     }
 
@@ -148,6 +153,7 @@ public class Topic_14_Wait extends BaseDriver {
 
         explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div#loader>div.spinner")));
     }
+
     @Test
     private void TC_05_Admin_NopCommerce() {
         driver.get("https://admin-demo.nopcommerce.com/login?ReturnUrl=%2Fadmin%2F/");
@@ -168,6 +174,111 @@ public class Topic_14_Wait extends BaseDriver {
         driver.findElement(By.xpath("//a[text()='Logout']")).click();
     }
 
+    @Test
+    private void TC_05_Alert_Confirm() {
+        driver.get("https://automationfc.github.io/basic-form");
+        WebElement btn = driver.findElement(By.xpath("//button[text()='Click for JS Confirm']"));
+        btn.click();
+        Utils.sleepInSecond(3);
 
+        //case 2 (Recommend). Wait to alert displayed and interact
+        alert = explicitWait.until(ExpectedConditions.alertIsPresent());
+        System.out.println(alert.getText());
+        org.testng.Assert.assertEquals(alert.getText(), "I am a JS Confirm");
+        alert.dismiss();
+        Utils.sleepInSecond(2);
+    }
+
+    @Test
+    private void TC_05_Wait_For_Attribute_Contain_Tobe_Value() {
+        driver.get("http://live.techpanda.org/index.php/");
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        explicitWait.until(ExpectedConditions.attributeContains(By.cssSelector("input#search"), "placeholder", "Search entire store"));
+        explicitWait.until(ExpectedConditions.attributeContains(By.cssSelector("input#search"), "placeholder", "Search entire store here..."));
+
+        // Wait exactly element ( attributeToBe tìm chính xác value của element)
+        explicitWait.until(ExpectedConditions.attributeToBe(By.cssSelector("input#search"), "placeholder", "Search entire store here..."));
+
+        Assert.assertEquals(driver.findElement(By.cssSelector("input#search")).getAttribute("placeholder"), "Search entire store here...");
+    }
+
+    @Test
+    private void TC_05_Wait_For_Clickable() {
+        driver.get("https://automationfc.github.io/dynamic-loading");
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        By startBtn = By.cssSelector("div#start>button");
+        explicitWait.until(ExpectedConditions.elementToBeClickable(startBtn));
+        // Đợi cho Start button được ready to click
+        driver.findElement(startBtn).click();
+    }
+
+    @Test
+    private void TC_05_Wait_CheckBox_Multiple_selected() {
+        driver.get("https://automationfc.github.io/multiple-fields/");
+        List<WebElement> items = driver.findElements(By.cssSelector("input.form-checkbox"));
+        for (WebElement item : items) {
+            item.click();
+        }
+        for (WebElement item : items) {
+            explicitWait.until(ExpectedConditions.elementToBeSelected(item));
+            Assert.assertTrue(item.isSelected());
+        }
+    }
+
+    @Test
+    private void TC_05_Wait_Switch_iframe() {
+        driver.get("https://netbanking.hdfcbank.com/netbanking/");
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        // Switch frame
+//        driver.switchTo().frame("login_page");
+        explicitWait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.name("login_page")));
+
+        // Integration elements
+        Utils.sendHumanKeys(driver.findElement(By.name("fldLoginUserId")), "helloworld");
+        driver.findElement(By.cssSelector("a.login-btn")).click();
+
+//        driver.switchTo().defaultContent();
+        //placeholder="Password/ IPIN"
+        explicitWait.until(ExpectedConditions.visibilityOfElementLocated(By.name("fldPassword")));
+        Utils.sendHumanKeys(driver.findElement(By.name("fldPassword")), "helloworld");
+        Assert.assertTrue(driver.findElement(By.name("fldPassword")).isDisplayed());
+    }
+
+    @Test
+    private void TC_05_Wait_Show_Hide_DatePikcer() {
+        driver.get("https://demos.telerik.com/aspnet-ajax/ajaxloadingpanel/functionality/explicit-show-hide/defaultcs.aspx");
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        By td = By.xpath("//a[text()='9']/parent::td");
+        explicitWait.until(ExpectedConditions.elementToBeClickable(td));
+        driver.findElement(td).click();
+
+        // Wait loading icon biếnt mất
+        explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div:not([style='display:none;'])>div.raDiv")));
+        explicitWait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='9']/parent::td[@class='rcSelected']")));
+    }
+
+    @Test
+    private void TC_05_Wait_Upload_File() {
+        driver.get("https://gofile.io/?t=uploadFiles");
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div#mainContent>div>div>div.spinner-border")));
+        explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div#mainUploadInitInfo>div>div.spinner-border")));
+        String file1 = projectPath + "/resources/1.jpg";
+        String file2 = projectPath + "/resources/2.jpg";
+
+        explicitWait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div#mainContent>div>div>a.ajaxLink>button"))).click();
+
+        By uploadFile = By.xpath("//input[@type='file']");
+        driver.findElement(uploadFile).sendKeys(file1 + "\n" + file2);
+        Utils.sleepInSecond(3);
+        // Wait progress-bar disappear
+        explicitWait.until(ExpectedConditions.invisibilityOfAllElements(driver.findElements(By.cssSelector("div.progress-bar"))));
+        // Wait message success appear
+        explicitWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class,'mainUploadSuccess')]//div[text()='Your files have been successfully uploaded']")));
+// Wail + click tp linnk
+        explicitWait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(@class,'mainUploadSuccess')]//a[@class='ajaxLink']"))).click();
+// Wait table include all items uploaded
+        explicitWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#filesContentTable")));
+    }
 }
 
