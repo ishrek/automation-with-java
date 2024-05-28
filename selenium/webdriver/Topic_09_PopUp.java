@@ -4,6 +4,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.support.CacheLookup;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -11,11 +14,14 @@ import org.testng.annotations.Test;
 import webdriver.common.BaseDriver;
 import webdriver.common.Utils;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 
 public class Topic_09_PopUp extends BaseDriver {
+    @FindBy(xpath = "//label[text()='Female']/following-sibling::input") // Using PageFactory
+    @CacheLookup // Tuy nhiên, có 1 cách để chỉ tìm 1 lần rồi sử dụng lại, đó là sử dụng annotation @CacheLookup
+    private WebElement femaleOption;
+
     @BeforeClass
     @Override
     public void beforeClass() {
@@ -27,6 +33,8 @@ public class Topic_09_PopUp extends BaseDriver {
         ffPptions.addPreference("browser.cache.offline.enable", false);
         ffPptions.addPreference("network.http.use-cache", false);
         super.beforeClass();
+        // Và khởi tạo initElements (Using PageFactory)
+        PageFactory.initElements(driver, this);
     }
 
     @Test
@@ -84,7 +92,7 @@ public class Topic_09_PopUp extends BaseDriver {
         Utils.sleepInSecond(2);
         new Select(driver.findElement(By.id("year"))).selectByVisibleText("1990");
         Utils.sleepInSecond(2);
-        driver.findElement(By.xpath("//label[text()='Female']/following-sibling::input")).click();
+        femaleOption.click();
         Utils.sleepInSecond(2);
         //Close
         By closeBtn = By.xpath("//div[text()='Sign Up']/parent::div/preceding-sibling::img");
