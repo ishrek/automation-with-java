@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <suite name="Parameter" parallel="classes" thread-count="2">
+    <listeners>
+        <!--        apply for listener for multiple class -->
+        <listener class-name="webdriver.Topic_17_Listener"/>
+    </listeners>
     <parameter name="browser" value="firefox"/>
     <parameter name="environment" value="dev"/>
     <test name="Run on firefox browser">
